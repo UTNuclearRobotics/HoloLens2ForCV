@@ -93,7 +93,7 @@ class RecorderShell(cmd.Cmd):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dev_portal_address", default="127.0.0.1:10080",
+    parser.add_argument("--dev_portal_address", default="169.254.120.76",
                         help="The IP address for the HoloLens Device Portal")
     parser.add_argument("--dev_portal_username", required=True,
                         help="The username for the HoloLens Device Portal")

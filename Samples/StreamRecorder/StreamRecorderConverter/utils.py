@@ -10,6 +10,7 @@ import tarfile
 
 import numpy as np
 import cv2
+import os
 
 from hand_defs import HandJointIndex
 
@@ -38,6 +39,21 @@ def load_lut(lut_filename):
         lut = np.reshape(lut, (-1, 3))
     return lut
 
+def make_video(capture_path, image_path, image_folder, frame_rate, filetype):
+    input_path = (str(image_path),'/',str(image_folder),'.avi')
+    video_name = ''.join(input_path)
+
+    images = [img for img in os.listdir(image_path) if img.endswith(filetype)]
+    frame = cv2.imread(os.path.join(image_path, images[0]))
+    height, width, layers = frame.shape
+
+    video = cv2.VideoWriter(video_name, 0, frame_rate, (width,height))
+
+    for image in images:
+        video.write(cv2.imread(os.path.join(image_path, image)))
+
+    cv2.destroyAllWindows()
+    video.release()
 
 def check_framerates(capture_path):
     HundredsOfNsToMilliseconds = 1e-4
@@ -53,8 +69,14 @@ def check_framerates(capture_path):
         timestamps = [int(path.stem) for path in paths]
         if len(timestamps):
             avg_delta = get_avg_delta(timestamps) * HundredsOfNsToMilliseconds
+            frame_rate = 1/(avg_delta * MillisecondsToSeconds)
             print('Average {} delta: {:.3f}ms, fps: {:.3f}'.format(
-                img_folder, avg_delta, 1/(avg_delta * MillisecondsToSeconds)))
+                img_folder, avg_delta, frame_rate))
+            if (img_folder.__contains__("VLC")):
+                make_video(capture_path, base_folder, img_folder, frame_rate, ".pgm")
+            if (img_folder.__contains__("PV")):
+                make_video(capture_path, base_folder, img_folder, frame_rate, ".png")
+        
 
     head_hat_stream_path = capture_path.glob('*eye.csv')
     try:
@@ -65,7 +87,6 @@ def check_framerates(capture_path):
             hh_avg_delta, 1/(hh_avg_delta * MillisecondsToSeconds)))
     except StopIteration:
         pass
-
 
 def load_head_hand_eye_data(csv_path):
     joint_count = HandJointIndex.Count.value

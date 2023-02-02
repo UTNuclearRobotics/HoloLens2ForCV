@@ -40,14 +40,18 @@ def load_lut(lut_filename):
     return lut
 
 def make_video(capture_path, image_path, image_folder, frame_rate, filetype):
-    input_path = (str(image_path),'/',str(image_folder),'.avi')
-    video_name = ''.join(input_path)
+    image_folder = image_folder.replace(" ", "_")
+    output_path = ('./Videos/',str(capture_path),'_',str(image_folder),'.avi')
+    video_filename = ''.join(output_path)
+
+    if not os.path.exists(video_filename):
+        os.makedirs(video_filename)
 
     images = [img for img in os.listdir(image_path) if img.endswith(filetype)]
     frame = cv2.imread(os.path.join(image_path, images[0]))
     height, width, layers = frame.shape
 
-    video = cv2.VideoWriter(video_name, 0, frame_rate, (width,height))
+    video = cv2.VideoWriter(video_filename, 0, frame_rate, (width,height))
 
     for image in images:
         video.write(cv2.imread(os.path.join(image_path, image)))

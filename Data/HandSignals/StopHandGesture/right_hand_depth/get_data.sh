@@ -1,0 +1,1 @@
+python3 ./../../../../Samples/StreamRecorder/StreamRecorderConverter/recorder_console.py --dev_portal_address 169.254.241.80 --dev_portal_username nrg2 --dev_portal_password 3RobotsDown --workspace_path ./
